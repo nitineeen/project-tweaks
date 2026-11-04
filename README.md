@@ -24,6 +24,10 @@ Recents — everything you've saved, filed and filterable:
 
 <img src="docs/recents-image.png" width="800" alt="Recents library of saves" />
 
+Capture palette — `Alt+T` anywhere, `Enter` saves the full page:
+
+<img src="docs/shortcut-palette.png" width="800" alt="Capture palette with save options" />
+
 ---
 
 ## Features
@@ -337,7 +341,7 @@ cd landing && npx vercel
 ```
 
 Or in the Vercel dashboard: Import the repo → set **Root Directory** to
-`landing` → Deploy. No build step, no env vars needed.
+`landing` (or leave default, handled by `vercel.json`) → Deploy. No build step, no env vars needed.
 
 ## Developing
 
