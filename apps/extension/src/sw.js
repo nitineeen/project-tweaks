@@ -177,16 +177,8 @@ function flashBadge(text) {
    content script get it injected first; restricted pages just miss it. */
 async function askReason(tabId, save) {
   if (!tabId || !save || save.user_reason) return;
-  const msg = { action: 'reason-ask', id: save.id, title: save.page_title || '' };
   try {
-    await chrome.tabs.sendMessage(tabId, msg);
-    return;
-  } catch {
-    /* content script missing — try injecting (guarded against double-run) */
-  }
-  try {
-    await chrome.scripting.executeScript({ target: { tabId }, files: ['src/content.js'] });
-    await chrome.tabs.sendMessage(tabId, msg);
+    await sendToTab(tabId, { action: 'reason-ask', id: save.id, title: save.page_title || '' });
   } catch {
     /* restricted page (chrome://, web store) — popup recents cover it */
   }
@@ -347,10 +339,10 @@ chrome.commands.onCommand.addListener(async (cmd) => {
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab) return;
-    // Palette first (Enter = full page, R = region, …). Restricted pages and
-    // tabs without the content script fall back to a direct full-page save.
+    // Palette first (Enter = full page, S = snap, …). Stale tabs get the
+    // content script injected; restricted pages fall back to a direct save.
     try {
-      await chrome.tabs.sendMessage(tab.id, { action: 'palette-open' });
+      await sendToTab(tab.id, { action: 'palette-open' });
     } catch {
       const res = await captureFull(tab, {});
       if (res && res.ok) await askReason(tab.id, res.save);
@@ -362,8 +354,22 @@ chrome.commands.onCommand.addListener(async (cmd) => {
 
 async function activeTab(sender) {
   if (sender && sender.tab) return sender.tab;
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  // lastFocusedWindow: the popup is never the "current" window for tabs.
+  const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
   return tab;
+}
+
+/* Send to a tab, injecting the content script first when it's missing
+   (stale tabs opened before install/update). Throws on restricted pages. */
+async function sendToTab(tabId, msg) {
+  try {
+    await chrome.tabs.sendMessage(tabId, msg);
+    return;
+  } catch {
+    /* content script missing — inject (double-run guarded), then retry once */
+  }
+  await chrome.scripting.executeScript({ target: { tabId }, files: ['src/content.js'] });
+  await chrome.tabs.sendMessage(tabId, msg);
 }
 
 chrome.runtime.onMessage.addListener((msg, sender, respond) => {
@@ -407,7 +413,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         case 'capture-video':
           return bgSave(saveVideo('', tab, msg.reason || ''));
         case 'region-start':
-          await chrome.tabs.sendMessage(tab.id, { action: 'region-start' });
+          await sendToTab(tab.id, { action: 'region-start' });
           return respond({ ok: true });
         default:
           return respond({ ok: false, error: 'unknown action' });

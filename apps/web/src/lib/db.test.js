@@ -117,6 +117,16 @@ test('threads delete singly and clear-all wipes the space', () => {
   assert.strictEqual(db.getThread(keep), null);
 });
 
+test('label filter matches taxonomy slugs in winners and signals', () => {
+  const id = db.listSaves({})[0].id;
+  db.updateSave(id, {
+    winners: JSON.stringify({ intent: { label: 'research', score: 90 } }),
+    top_signals: JSON.stringify([{ set: 'intent', label: 'research', score: 90 }]),
+  });
+  assert.ok(db.listSaves({ label: 'research' }).some((s) => s.id === id));
+  assert.ok(!db.listSaves({ label: 'zzz-no-such-label' }).some((s) => s.id === id));
+});
+
 test('memory writes upsert; wipe clears user plane, keeps admin plane', () => {
   db.putMemoryRow('local-dev', 'permanent', 'name', 'Zed', 100);
   db.putMemoryRow('local-dev', 'permanent', 'name', 'Zed Two', 100);

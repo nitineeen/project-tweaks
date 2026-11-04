@@ -55,10 +55,15 @@ export default async function Folders() {
         <>
           <div className="sec-title">Emerging themes</div>
           <div>
-            {themes.map((t) => (
-              <span key={`${t.label}`} className="chip">
+            {themes.map((t, i) => (
+              <Link
+                key={`${i}:${t.label}`}
+                href={`/recents?label=${encodeURIComponent(t.label)}`}
+                className="chip"
+                title={`Show saves filed as ${pretty(t.label)}`}
+              >
                 {pretty(t.label)} · {t.saves_count}
-              </span>
+              </Link>
             ))}
           </div>
         </>
@@ -72,7 +77,12 @@ export default async function Folders() {
                 <Link href={`/recents/${a.id}`} style={{ fontWeight: 600 }}>
                   {a.page_title || '(untitled)'}
                 </Link>{' '}
-                <span style={{ color: 'var(--muted)' }}>found a home in {pretty(a.folder_slug)}</span>
+                <span style={{ color: 'var(--muted)' }}>
+                  found a home in{' '}
+                  <Link href={`/folders/${encodeURIComponent(a.folder_slug || 'loose-threads')}`}>
+                    {pretty(a.folder_slug)}
+                  </Link>
+                </span>
               </div>
             ))}
           </div>

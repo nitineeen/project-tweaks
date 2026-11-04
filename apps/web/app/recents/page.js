@@ -24,14 +24,22 @@ function hostOf(url) {
   }
 }
 
+function pretty(s) {
+  return String(s || '')
+    .replace(/_/g, ' ')
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 export default async function Recents({ searchParams }) {
   const sp = await searchParams;
   const type = sp?.type || '';
+  const label = sp?.label || '';
   let saves = [];
   let c = { saves: 0, filed: 0 };
   let projects = [];
   try {
-    saves = listSaves({ limit: 60, type });
+    saves = listSaves({ limit: 60, type, label });
     c = counts();
     projects = listProjects('active').slice(0, 3);
   } catch {
@@ -48,6 +56,16 @@ export default async function Recents({ searchParams }) {
       <p style={{ color: 'var(--muted)', marginTop: 0 }}>
         Every spark you&apos;ve saved. A little less scattered, a little more connected.
       </p>
+      {label && (
+        <div style={{ marginTop: 10 }}>
+          <span className="chip" style={{ fontSize: 12 }}>
+            Theme: {pretty(label)}{' '}
+            <Link href="/recents" title="Clear filter" style={{ color: 'var(--rust)' }}>
+              ✕
+            </Link>
+          </span>
+        </div>
+      )}
       <div className="grid-cards" style={{ marginTop: 18 }}>
         {projects.map((p) => (
           <Link key={p.id} href={`/projects/${p.slug}`} className="card" style={{ padding: '14px 16px' }}>

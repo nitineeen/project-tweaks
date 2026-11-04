@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tweaks — a think space for what you save</title>
+<meta name="description" content="Save anything with one line about why. Tweaks files it automatically and lets you think with it later. Local-first, open source." />
+<style>
+  :root {
+    --paper: #faf7f2; --card: #ffffff; --ink: #1c1917; --muted: #78716c;
+    --line: #e9e2d6; --sand: #f1eadf; --moss: #5b6650; --rust: #c14a24;
+    --rust-soft: #f7e8e0; --serif: Georgia, 'Times New Roman', serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--paper); color: var(--ink);
+    font: 16px/1.6 system-ui, -apple-system, sans-serif; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px; }
+  header.top { display: flex; align-items: center; gap: 10px; padding: 18px 0; }
+  .brand { display: flex; align-items: center; gap: 8px; font-size: 22px;
+    font-weight: 700; letter-spacing: -0.02em; text-decoration: none; color: var(--ink); }
+  .brand .mark { color: var(--rust); }
+  nav { margin-left: auto; display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+  nav a { color: var(--muted); text-decoration: none; font-size: 14px; padding: 8px 12px;
+    border-radius: 10px; }
+  nav a:hover { background: var(--sand); color: var(--ink); }
+  nav a.cta { background: var(--rust); color: #fff; font-weight: 600; }
+  nav a.cta:hover { background: var(--rust); }
+  .hero { padding: 56px 0 20px; }
+  .kicker { color: var(--rust); letter-spacing: 0.14em; font-size: 12px; font-weight: 700; }
+  h1 { font-family: var(--serif); font-weight: 500; font-size: 52px;
+    line-height: 1.1; letter-spacing: -0.01em; margin: 12px 0; }
+  .lede { font-size: 18px; color: var(--muted); max-width: 640px; }
+  .btns { display: flex; gap: 10px; margin-top: 22px; flex-wrap: wrap; }
+  .btn { display: inline-block; padding: 12px 22px; border-radius: 10px; font-weight: 600;
+    font-size: 15px; text-decoration: none; }
+  .btn-rust { background: var(--rust); color: #fff; }
+  .btn-light { background: var(--card); color: var(--ink); border: 1px solid var(--line); }
+  .chips { display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
+  .chip { font-size: 12px; border: 1px solid var(--line); border-radius: 20px;
+    padding: 2px 12px; color: var(--muted); background: var(--card); }
+  section { padding: 36px 0 8px; }
+  h2 { font-family: var(--serif); font-weight: 500; font-size: 32px; margin: 0 0 6px; }
+  .sub { color: var(--muted); margin-top: 0; }
+  figure.shot { margin: 22px 0; background: var(--card); border: 1px solid var(--line);
+    border-radius: 14px; overflow: hidden; }
+  figure.shot img { width: 100%; display: block; }
+  figure.shot figcaption { padding: 10px 16px; font-size: 13px; color: var(--muted); }
+  .step { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 16px 18px; margin: 12px 0; }
+  .step h3 { margin: 0 0 4px; font-size: 16px; }
+  .step h3 .n { display: inline-block; min-width: 26px; height: 26px; line-height: 26px;
+    text-align: center; background: var(--rust-soft); color: var(--rust);
+    border-radius: 8px; font-size: 13px; margin-right: 8px; }
+  .step p { margin: 6px 0; color: var(--muted); font-size: 14px; }
+  pre { position: relative; background: var(--ink); color: var(--paper); border-radius: 10px;
+    padding: 12px 14px; padding-right: 86px; font-size: 13px; overflow-x: auto; margin: 10px 0 2px; }
+  pre code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .copy { position: absolute; top: 8px; right: 8px; background: transparent;
+    color: var(--paper); border: 1px solid #57534e; border-radius: 8px;
+    font-size: 12px; padding: 4px 10px; cursor: pointer; }
+  .copy:hover { background: #44403c; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .feat { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 14px 16px; }
+  .feat b { display: block; margin-bottom: 2px; }
+  .feat b i { display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--rust); font-style: normal; margin-right: 8px; }
+  .feat span { font-size: 14px; color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; background: var(--card); font-size: 14px;
+    border-radius: 14px; overflow: hidden; border: 1px solid var(--line); margin-top: 14px; }
+  th { text-align: left; font-size: 11px; letter-spacing: 0.08em; color: var(--muted);
+    padding: 10px 14px; border-bottom: 1px solid var(--line); }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--line); }
+  tr:last-child td { border-bottom: 0; }
+  details { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 10px 16px; margin: 8px 0; font-size: 14px; }
+  details summary { cursor: pointer; font-weight: 600; }
+  details p { color: var(--muted); margin: 6px 0 4px; }
+  footer { margin: 48px 0 0; padding: 24px 0 40px; border-top: 1px solid var(--line);
+    color: var(--muted); font-size: 13px; display: flex; gap: 8px; align-items: center;
+    justify-content: space-between; flex-wrap: wrap; }
+  @media (max-width: 640px) {
+    h1 { font-size: 36px; }
+    .cols { grid-template-columns: 1fr; }
+    nav a:not(.cta) { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <a class="brand" href="#top"><span class="mark">✳</span> tweaks</a>
+    <nav>
+      <a href="#screens">Screens</a>
+      <a href="#setup">Setup</a>
+      <a href="#features">Features</a>
+      <a href="#costs">Costs</a>
+      <a href="https://github.com/nitineeen/project-tweaks" target="_blank" rel="noopener">GitHub</a>
+      <a class="cta" href="#setup">Set up in 5 min</a>
+    </nav>
+  </header>
+
+  <div class="hero" id="top">
+    <div class="kicker">LOCAL-FIRST · OPEN SOURCE (MIT)</div>
+    <h1>Keep what moves you.<br />Think clearly later.</h1>
+    <p class="lede">Tweaks is a think space for your saves. Capture any page, image,
+      article, video, or AI chat with one line about <em>why</em> — Tweaks files
+      it automatically, remembers what matters, and lets you brainstorm with an
+      AI that answers from your own collection, with citations.</p>
+    <div class="btns">
+      <a class="btn btn-rust" href="#setup">Set it up ↓</a>
+      <a class="btn btn-light" href="#screens">See the screens</a>
+    </div>
+    <div class="chips">
+      <span class="chip">Your data stays on your machine</span>
+      <span class="chip">Works offline in mock mode</span>
+      <span class="chip">Chrome extension + Next.js dashboard</span>
+    </div>
+  </div>
+
+  <section id="screens">
+    <h2>Screens</h2>
+    <p class="sub">The two rooms you'll live in.</p>
+    <figure class="shot">
+      <img src="Think-space.png" alt="Think space chat with cited references" loading="lazy" />
+      <figcaption><b>Think space</b> — ask anything; answers stream back grounded in your saves, with [1][2] chips linking to the exact save.</figcaption>
+    </figure>
+    <figure class="shot">
+      <img src="recents-image.png" alt="Recents library of filed saves" loading="lazy" />
+      <figcaption><b>Recents</b> — everything you've saved, auto-filed with its reason, labels, and visual metadata.</figcaption>
+    </figure>
+  </section>
+
+  <section id="setup">
+    <h2>Setup, one step at a time</h2>
+    <p class="sub">You need Node.js 22+ and Chrome. A Meta API key is optional — without one, the app runs on fixtures so you can try everything.</p>
+
+    <div class="step">
+      <h3><span class="n">1</span> Get the code</h3>
+      <p>Clone the repo and enter the directory:</p>
+      <pre><code>git clone https://github.com/nitineeen/project-tweaks.git
+cd project-tweaks</code><button class="copy" data-copy="git clone https://github.com/nitineeen/project-tweaks.git
+cd project-tweaks">Copy</button></pre>
+    </div>
+
+    <div class="step">
+      <h3><span class="n">2</span> Run the installer</h3>
+      <p>It asks for a port (3121), the AI base URL, your API key (blank = mock mode), then installs, checks the key, and creates your database:</p>
+      <pre><code>node setup.mjs</code><button class="copy" data-copy="node setup.mjs">Copy</button></pre>
+      <p>It prints an <b>extension token</b> at the end — keep it for step 4.</p>
+    </div>
+
+    <div class="step">
+      <h3><span class="n">3</span> Start the dashboard</h3>
+      <pre><code>cd apps/web &amp;&amp; npm run dev</code><button class="copy" data-copy="cd apps/web && npm run dev">Copy</button></pre>
+      <p>Open <b>http://localhost:3121/think</b> — that's your think space.</p>
+    </div>
+
+    <div class="step">
+      <h3><span class="n">4</span> Load the extension</h3>
+      <p>Open <b>chrome://extensions</b> → Developer mode → <b>Load unpacked</b> → pick the <b>apps/extension</b> folder. Pin Tweaks to the toolbar.</p>
+    </div>
+
+    <div class="step">
+      <h3><span class="n">5</span> Link the extension</h3>
+      <p>Extension popup → <b>Connection</b> → API URL <b>http://localhost:3121</b> + the token from step 2. Queued saves upload right away.</p>
+    </div>
+
+    <div class="step">
+      <h3><span class="n">6</span> Save your first spark</h3>
+      <p>Press <b>Alt+T</b> (<b>⌥T</b> on Mac) on any page, <b>Enter</b> for the full page, tell it why you're saving it — then ask about it in Think space.</p>
+    </div>
+  </section>
+
+  <section id="features">
+    <h2>What you get</h2>
+    <p class="sub">The short tour. The README has every endpoint and setting.</p>
+    <div class="cols">
+      <div class="feat"><b><i></i>Capture anything</b><span>Full page, Snap-a-region, bookmark, image, article, video/link, AI-chat transcript, full-page stitch — from palette, menus, or selection.</span></div>
+      <div class="feat"><b><i></i>Auto-filing</b><span>25-label classification, meta-labels, folders, visual metadata, open taxonomy. You never file anything.</span></div>
+      <div class="feat"><b><i></i>Think space</b><span>Quick answers or a Deep agent with tools. Citations, threads, pins, drafts, share links, memory that learns.</span></div>
+      <div class="feat"><b><i></i>Library</b><span>Recents, Folders, Projects, Drafts, Resources, Trash, typo-tolerant ⌘K search across all of it.</span></div>
+    </div>
+  </section>
+
+  <section id="costs">
+    <h2>What AI calls cost</h2>
+    <p class="sub">Mock mode costs nothing. With a key, Meta bills per use (verify on their pricing page):</p>
+    <table>
+      <tr><th>MODEL</th><th>PRICE</th></tr>
+      <tr><td>Muse Spark 1.3 / 1.2</td><td>$1.25 / $4.25 per 1M in/out tokens</td></tr>
+      <tr><td>Spark Contributor mode</td><td>$0.10 / $0.20 per 1M in/out tokens</td></tr>
+      <tr><td>Muse Image 1.0</td><td>$0.01 per image</td></tr>
+      <tr><td>Voice Transcribe</td><td>$0.18 per audio hour</td></tr>
+    </table>
+  </section>
+
+  <section id="stuck">
+    <h2>Stuck?</h2>
+    <details>
+      <summary>Save stuck on “finishing…”</summary>
+      <p>The backend isn't running — the save is queued locally and uploads when you start <b>npm run dev</b>.</p>
+    </details>
+    <details>
+      <summary>Reason card never pops</summary>
+      <p>Reload the extension at chrome://extensions (⟳) and refresh the tab. chrome:// pages can't show popups — use the box in the extension popup there.</p>
+    </details>
+    <details>
+      <summary>Port busy</summary>
+      <p>Re-run <b>node setup.mjs</b> and pick another port.</p>
+    </details>
+    <details>
+      <summary>401 / invalid key</summary>
+      <p>Check AI_API_KEY in apps/web/.env.local and restart the dev server.</p>
+    </details>
+  </section>
+
+  <footer>
+    <span><span style="color: var(--rust)">✳</span> tweaks — MIT licensed. Your saves stay yours.</span>
+    <span><a href="https://github.com/nitineeen/project-tweaks" style="color: inherit;" target="_blank" rel="noopener">GitHub</a> · Full docs in the repo README.</span>
+  </footer>
+
+</div>
+<script>
+(function () {
+  'use strict';
+  function flash(btn) {
+    const old = btn.textContent;
+    btn.textContent = 'Copied ✓';
+    setTimeout(function () { btn.textContent = old; }, 1400);
+  }
+  function legacyCopy(text, btn) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (e) { /* clipboard unavailable */ }
+    ta.remove();
+    flash(btn);
+  }
+  document.querySelectorAll('.copy').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const text = btn.getAttribute('data-copy') || '';
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(
+          function () { flash(btn); },
+          function () { legacyCopy(text, btn); }
+        );
+      } else {
+        legacyCopy(text, btn);
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

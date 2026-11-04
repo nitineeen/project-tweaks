@@ -203,7 +203,11 @@ export function getSaveFull(id) {
   };
 }
 
-export function listSaves({ limit = 50, type = '', project = '', folder = '' } = {}) {
+function escapeLike(s) {
+  return String(s).replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_');
+}
+
+export function listSaves({ limit = 50, type = '', project = '', folder = '', label = '' } = {}) {
   const where = ['deleted_at IS NULL'];
   const args = [];
   if (type) {
@@ -217,6 +221,13 @@ export function listSaves({ limit = 50, type = '', project = '', folder = '' } =
   if (folder) {
     where.push('folder_slug = ?');
     args.push(folder);
+  }
+  if (label) {
+    // Taxonomy labels live slugged in top_signals, raw or slugged in winners.
+    const sl = slug(String(label).slice(0, 80));
+    const spaced = sl.replace(/_/g, ' ');
+    where.push("(winners LIKE ? ESCAPE '\\' OR winners LIKE ? ESCAPE '\\' OR top_signals LIKE ? ESCAPE '\\')");
+    args.push(`%${escapeLike(sl)}%`, `%${escapeLike(spaced)}%`, `%${escapeLike(sl)}%`);
   }
   args.push(Number(limit) || 50);
   const rows = PA(

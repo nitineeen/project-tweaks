@@ -14,6 +14,16 @@ Local-first: your data lives in a SQLite file on your machine. No accounts, no
 cloud database. AI calls go to Meta's Model API when you add a key — or the
 app runs on built-in fixtures so you can try everything offline.
 
+## Screenshots
+
+Think space — chat with your collection, citations included:
+
+<img src="docs/Think-space.png" width="800" alt="Think space chat with cited references" />
+
+Recents — everything you've saved, filed and filterable:
+
+<img src="docs/recents-image.png" width="800" alt="Recents library of saves" />
+
 ---
 
 ## Features
@@ -281,6 +291,7 @@ tweaks/
   setup.mjs            one-command installer (this file's step 2)
   README.md            this file
   LICENSE            MIT
+  docs/                screenshots for the README
   apps/web/            Next.js dashboard + API + SQLite
     app/               pages (think, recents, folders, projects, drafts,
                        resources, trash, settings, admin, share) + api routes
@@ -315,6 +326,18 @@ tweaks/
   `rm -rf apps/web/.next` and retry.
 - **Extension menus missing.** Reload the extension — new menus need a
   reload to register.
+
+## Landing page
+
+The `landing/` folder is a zero-dependency static page (same UI, setup guide
+with copy buttons, screenshots) made to deploy on Vercel:
+
+```sh
+cd landing && npx vercel
+```
+
+Or in the Vercel dashboard: Import the repo → set **Root Directory** to
+`landing` → Deploy. No build step, no env vars needed.
 
 ## Developing
 
