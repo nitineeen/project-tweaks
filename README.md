@@ -342,6 +342,7 @@ cd landing && npx vercel
 
 Or in the Vercel dashboard: Import the repo → set **Root Directory** to
 `landing` (or leave default, handled by `vercel.json`) → Deploy. No build step, no env vars needed.
+Before you deploy, replace `YOUR-USERNAME` in `landing/index.html` with your GitHub username so the clone command copies correctly.
 
 ## Developing
 

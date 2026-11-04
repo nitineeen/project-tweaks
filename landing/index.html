@@ -98,6 +98,7 @@
     <nav>
       <a href="#screens">Screens</a>
       <a href="#setup">Setup</a>
+      <a href="#no-key">No key?</a>
       <a href="#features">Features</a>
       <a href="#costs">Costs</a>
       <a href="https://github.com/nitineeen/project-tweaks" target="_blank" rel="noopener">GitHub</a>
@@ -142,7 +143,7 @@
 
   <section id="setup">
     <h2>Setup, one step at a time</h2>
-    <p class="sub">You need Node.js 22+ and Chrome. A Meta API key is optional — without one, the app runs on fixtures so you can try everything.</p>
+    <p class="sub">You need Node.js 22+ and Chrome. A Meta API key is optional — without one, the app runs on fixtures so you can try everything. No Meta key but have Gemini, OpenRouter, or something else? Jump to <a href="#no-key">Help-agent setup ↓</a>.</p>
 
     <div class="step">
       <h3><span class="n">1</span> Get the code</h3>
@@ -178,6 +179,44 @@ cd project-tweaks">Copy</button></pre>
     <div class="step">
       <h3><span class="n">6</span> Save your first spark</h3>
       <p>Press <b>Alt+T</b> (<b>⌥T</b> on Mac) on any page, <b>Enter</b> for the full page, tell it why you're saving it — then ask about it in Think space.</p>
+    </div>
+  </section>
+
+  <section id="no-key">
+    <h2>Help-agent setup</h2>
+    <p class="sub">No Meta API key? Copy this master prompt into any AI agent — Cursor, Claude, ChatGPT, Gemini, whatever you have — and it will interview you about what you <em>do</em> have, then walk you through setup on your models.</p>
+    <div class="step">
+      <h3><span class="n">✳</span> Master prompt — paste into any agent</h3>
+      <p>It carries the full architecture context, so models and endpoints swap cleanly. The agent asks first, then acts.</p>
+      <pre><code>You are helping me set up Tweaks, a local-first open-source think space. Read everything below, then ask me the counter-questions BEFORE changing anything.
+
+WHAT TWEAKS IS
+- A Chrome extension (MV3) that captures pages, images, articles, videos, and AI chats with a "why saving" reason, plus a Next.js dashboard + API backed by local SQLite. An AI agent answers from my saved collection with citations.
+- Repo layout: apps/web (Next.js dashboard + API + SQLite), apps/extension (Chrome MV3), packages/shared (taxonomy/prompts), setup.mjs (installer), docs/ (screenshots).
+- Install: `node setup.mjs` (asks port default 3121, AI base/key, writes apps/web/.env.local, npm install, creates DB), then `cd apps/web && npm run dev`, load apps/extension unpacked in Chrome, paste API URL + DEV_EXTENSION_TOKEN in popup Connection.
+
+ARCHITECTURE YOU MUST RESPECT (so models swap easily)
+- One gateway assumption: a single AI_API_BASE + AI_API_KEY serves every model, OpenAI-compatible (POST {base}/chat/completions, same shape for streaming + tool calls). Code: apps/web/src/lib/ai.js (chatJSON / chatStream / chatTools).
+- Model slots in apps/web/.env.local (Meta versioned IDs today): MODEL_CLASSIFY + MODEL_VISION (save-time filing; vision needs image input), MODEL_THINK_QUICK (fast chat), MODEL_THINK_DEEP (tool-loop chat; needs function-calling), MODEL_RERANK (reserved), MODEL_SEGMENT=sam-3.1 (reserved), MODEL_IMAGE (reserved), MODEL_TRANSCRIBE (reserved), MODEL_EMBED=open-weights-local (reserved), MODEL_LOCAL (reserved offline pass).
+- AI_PROVIDER=mock (no key: deterministic fixtures everywhere, labeled "(mock read)") or real (gateway calls). Mock must keep working no matter what you change.
+- Extension API uses Bearer DEV_EXTENSION_TOKEN; dashboard API is localhost-only. SQLite auto-creates at SQLITE_PATH on first boot. Dashboard port lives in package.json dev/start -p flags (default 3121) and the extension default URL must match it.
+
+MY PROBLEM
+I do not have Meta Model API keys. I want to run Tweaks on models I can access (free tiers welcome: Google Gemini free tier, OpenRouter free/cheap models, OpenAI, local Ollama, or anything else).
+
+COUNTER-QUESTIONS — ASK THESE FIRST, WAIT FOR MY ANSWERS:
+1. Which of these do you actually have right now: a Google AI Studio (Gemini) key, an OpenRouter key, an OpenAI key, an Anthropic key, a local Ollama or other server, or none at all?
+2. Free tier only, or can you spend a little? (This decides model choice.)
+3. Do you need image understanding at save time (screenshot visual metadata), or is text-only filing OK to start? (Text-only works with any chat model.)
+4. Do you want Deep mode's tool loop, or is Quick single-shot chat enough? (Tool loop needs a model with function-calling.)
+5. What OS/shell are you on, and is Node 22+ installed? (`node -v`)
+
+AFTER I ANSWER, DO THIS IN ORDER:
+1. Give me the exact AI_API_BASE + AI_API_KEY + MODEL_* values for my provider. Known-good OpenAI-compatible shapes: Gemini → base https://generativelanguage.googleapis.com/v1beta/openai/ with a gemini-* model; OpenRouter → base https://openrouter.ai/api/v1 with provider/model IDs (Anthropic-direct is NOT OpenAI-compatible — route Claude via OpenRouter); Ollama → base http://localhost:11434/v1 with pulled model names. Keep every slot filled; point reserved slots at the chat model or leave them — never break boot.
+2. Tell me what works vs what degrades on my pick (vision? tools? streaming? image/voice generation?) in one short table. If my model lacks vision or tool-calling, say exactly which features go quiet and what still works.
+3. Walk me through setup command by command (setup.mjs answers included), then verify: gateway /models check, one extension save → "filed", one Think question answered. If a step fails, diagnose from the error: 401 = key wrong, 404 model_not_found = wrong model ID (use the provider's exact versioned name), EADDRINUSE = port busy (re-run setup with a new port).
+4. Keep all changes minimal and local-first: .env.local + package.json port only, unless code must change (non-OpenAI-compatible API → propose the smallest adapter in ai.js, keep mock + tests green: `npm test` 26/26, `npx next build` clean).
+5. End with a 5-line recap: what I set, what works, what doesn't, what it costs, what to try first.</code><button class="copy" id="masterPromptBtn">Copy prompt</button></pre>
     </div>
   </section>
 
@@ -251,7 +290,11 @@ cd project-tweaks">Copy</button></pre>
   }
   document.querySelectorAll('.copy').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      const text = btn.getAttribute('data-copy') || '';
+      let text = btn.getAttribute('data-copy') || '';
+      if (!text) {
+        const code = btn.parentElement ? btn.parentElement.querySelector('code') : null;
+        text = code ? code.innerText || code.textContent || '' : '';
+      }
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(
           function () { flash(btn); },
