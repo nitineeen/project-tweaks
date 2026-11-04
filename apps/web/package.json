@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "next": "^15.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "name": "tweaks-web",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev -H 127.0.0.1 -p 3121",
+    "start": "next start -H 127.0.0.1 -p 3121",
+    "test": "node --test src/lib/db.test.js src/lib/think.test.js src/lib/tools.test.js src/lib/fuzzy.test.js"
+  }
+}

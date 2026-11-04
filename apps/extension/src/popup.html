@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>
+  /* Mirrors apps/web/app/globals.css tokens + brand. */
+  :root {
+    --paper: #faf7f2; --card: #ffffff; --ink: #1c1917; --muted: #78716c;
+    --line: #e9e2d6; --sand: #f1eadf; --moss: #5b6650; --rust: #c14a24;
+    --rust-soft: #f7e8e0;
+  }
+  * { box-sizing: border-box; }
+  body { width: 360px; margin: 0; background: var(--paper); color: var(--ink);
+    font: 14px/1.5 system-ui, sans-serif; }
+  header { display: flex; align-items: center; gap: 8px; padding: 12px 14px 4px; }
+  .brand { display: flex; align-items: center; gap: 8px; font-size: 20px;
+    font-weight: 700; letter-spacing: -0.02em; }
+  .brand .mark { color: var(--rust); }
+  .pill { margin-left: auto; font-size: 11px; color: var(--muted);
+    border: 1px solid var(--line); background: var(--card); border-radius: 20px;
+    padding: 3px 10px; white-space: nowrap; }
+  .pill.linked { color: var(--moss); border-color: var(--moss); }
+  main { padding: 2px 14px 10px; }
+  label.q { display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 12px; color: var(--muted); margin: 6px 0; }
+  #count { font-size: 11px; }
+  textarea { width: 100%; min-height: 56px; resize: vertical;
+    border: 1px solid var(--line); border-radius: 10px; padding: 9px 10px;
+    font: inherit; background: var(--card); color: var(--ink); }
+  textarea:focus { outline: 2px solid var(--ink); outline-offset: -1px; }
+  button { font: inherit; cursor: pointer; }
+  #save { width: 100%; margin-top: 10px; background: var(--rust); color: #fff;
+    border: 0; border-radius: 10px; padding: 11px; font-weight: 700; font-size: 14px;
+    display: flex; align-items: center; justify-content: center; gap: 8px; }
+  #save:disabled { opacity: 0.55; cursor: default; }
+  #save small { font-weight: 400; opacity: 0.75; }
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
+  .ghost { background: var(--card); color: var(--ink); border: 1px solid var(--line);
+    border-radius: 10px; padding: 9px 6px; font-size: 13px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center; gap: 7px; }
+  .ghost:hover { background: var(--sand); }
+  .ghost:disabled { opacity: 0.5; cursor: default; }
+  .ghost svg { flex-shrink: 0; }
+  #smart { display: flex; align-items: center; gap: 8px; margin-top: 8px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 7px 10px; font-size: 12px; }
+  #smart[hidden] { display: none; }
+  #smart .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--moss); flex-shrink: 0; }
+  #smart button { margin-left: auto; background: var(--ink); color: var(--paper);
+    border: 0; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 600;
+    white-space: nowrap; }
+  #status { min-height: 18px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+  #status .ok { color: var(--moss); font-weight: 600; }
+  #status input.redit { width: 100%; font: inherit; border: 1px solid var(--line);
+    border-radius: 8px; padding: 6px 8px; margin-top: 6px; background: var(--card); color: var(--ink); }
+  h2 { font-size: 11px; letter-spacing: 0.1em; color: var(--muted); font-weight: 600;
+    margin: 10px 0 6px; }
+  #recents { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column;
+    gap: 4px; max-height: 148px; overflow-y: auto; }
+  #recents li { background: var(--card); border: 1px solid var(--line);
+    border-radius: 10px; padding: 6px 10px; font-size: 12px; }
+  #recents .t { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #recents .m { font-size: 11px; color: var(--muted); display: flex; gap: 6px;
+    align-items: center; margin-top: 1px; }
+  #recents .r { font-size: 12px; margin-top: 2px; }
+  #recents .r.empty { color: var(--rust); cursor: pointer; }
+  #recents input.redit { width: 100%; font: inherit; border: 1px solid var(--line);
+    border-radius: 8px; padding: 4px 6px; margin-top: 2px; font-size: 12px; }
+  .chip { border: 1px solid var(--line); border-radius: 20px; padding: 0 7px; white-space: nowrap; }
+  .chip.sent { color: var(--moss); } .chip.queued { color: var(--rust); }
+  details { margin: 8px 0 2px; }
+  details summary { font-size: 12px; color: var(--muted); cursor: pointer; padding: 2px 0; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
+  .linkrow { display: flex; gap: 6px; margin-top: 6px; }
+  .linkrow input { flex: 1; font: inherit; font-size: 12px; border: 1px solid var(--line);
+    border-radius: 10px; padding: 8px 10px; background: var(--card); color: var(--ink); min-width: 0; }
+  details input.cfg { width: 100%; font: inherit; border: 1px solid var(--line);
+    border-radius: 8px; padding: 6px 8px; margin-top: 6px; background: var(--card); color: var(--ink); }
+  details .hint { font-size: 11px; color: var(--muted); margin-top: 8px; }
+  details .hint kbd { border: 1px solid var(--line); border-radius: 6px; padding: 0 6px;
+    background: var(--card); font-family: inherit; }
+  footer { padding: 8px 14px 12px; border-top: 1px solid var(--line); text-align: right; }
+  footer a { font-size: 12px; color: var(--rust); text-decoration: none; font-weight: 600; }
+</style>
+</head>
+<body>
+<header>
+  <span class="brand"><span class="mark">✳</span> tweaks</span>
+  <span class="pill" id="mode">local mode</span>
+</header>
+<main>
+  <label class="q" for="reason"><span>Why are you saving this?</span><span id="count">0 / 500</span></label>
+  <textarea id="reason" maxlength="500" placeholder="The feeling I want our start page to have…" autofocus></textarea>
+  <button id="save">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+    Save full page <small>⏎</small>
+  </button>
+  <div class="duo">
+    <button class="ghost" id="snap" title="Snap anything on this page — drag to capture">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></svg>
+      Snap
+    </button>
+    <button class="ghost" id="chat" title="Save this AI conversation, both sides">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      AI chat
+    </button>
+  </div>
+  <div id="smart" hidden>
+    <span class="dot"></span><span id="smartLabel"></span><button id="smartBtn"></button>
+  </div>
+  <div id="status" aria-live="polite"></div>
+  <h2>RECENT</h2>
+  <ul id="recents"></ul>
+  <details id="more">
+    <summary>More captures</summary>
+    <div class="grid">
+      <button class="ghost" id="bookmark" title="Save URL + text, no screenshot">Bookmark</button>
+      <button class="ghost" id="article" title="Save the article text">Article</button>
+      <button class="ghost" id="video" title="Save this page as a video">Video</button>
+      <button class="ghost" id="fullshot" title="Auto-scroll full-page screenshot">Full shot</button>
+    </div>
+    <div class="linkrow">
+      <input id="link" placeholder="…or paste any link ⏎" />
+      <button class="ghost" id="savelink" title="Save a pasted link (works for videos too)">Save link</button>
+    </div>
+  </details>
+  <details>
+    <summary>Connection</summary>
+    <input class="cfg" id="apiUrl" placeholder="API URL, e.g. http://localhost:3121" />
+    <input class="cfg" id="token" placeholder="Extension token" />
+    <div style="margin-top:6px"><button class="ghost" id="saveSettings">Save settings</button></div>
+    <div class="hint"><kbd id="shortcutHint">Alt+T</kbd> opens the capture palette, then
+      <kbd>⏎</kbd> saves the full page. On Mac that is <kbd>⌥T</kbd> — Chrome reserves Ctrl+T / ⌘T.
+      Remap at <i>chrome://extensions/shortcuts</i>.</div>
+  </details>
+</main>
+<footer><a id="openSpace" href="#" title="Open your think space">think space ↗</a></footer>
+<script src="popup.js"></script>
+</body>
+</html>
