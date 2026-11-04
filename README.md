@@ -120,13 +120,14 @@ deliberately local-only.
 
 ## Install, step by step
 
-**1. Get the code.** Clone the repo or download the ZIP and open a terminal
-in the project folder:
+**1. Get the code.** Clone the repo and enter the directory:
 
 ```sh
-git clone <your-repo-url> tweaks
-cd tweaks
+git clone https://github.com/nitineeen/project-tweaks.git
+cd project-tweaks
 ```
+
+*(Or via SSH: `git clone git@github.com:nitineeen/project-tweaks.git && cd project-tweaks`)*
 
 **2. Run setup.** It asks a few questions and does the rest:
 
